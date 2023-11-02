@@ -1,0 +1,14 @@
+{
+  "name": "copper-crm-bkp",
+  "version": "1.0.0",
+  "description": "Download copper CRM DATA in JSON Format",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Perki",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "superagent": "^8.1.2"
+  }
+}
