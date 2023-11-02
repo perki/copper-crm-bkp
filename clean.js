@@ -7,8 +7,8 @@ function loop(dir) {
       if (fs.statSync(fullPath).isDirectory()) return loop(fullPath);
       if (fileName.endsWith('.json')) {
         const content = fs.readFileSync(fullPath, 'utf-8');
-        if (content.length > 3 && content === '[]') {
-          fs.unlinkSync(path);
+        if (content.length < 4 && content === '[]') {
+          fs.unlinkSync(fullPath);
           console.log('Removed: ' + fullPath);
         }
       }

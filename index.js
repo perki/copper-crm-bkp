@@ -1,5 +1,6 @@
 const superagent = require('superagent');
 const fs = require('fs');
+const path = require('path');
 
 let callsCount = 0;
 let waitBetweenCalls = 1800;
@@ -12,6 +13,9 @@ const APIEMAIL = process.env.COPPER_EMAIL
 
 if (! APIKEY) throw new Error('COPPER_APIKEY environement variable missing');
 if (! APIEMAIL) throw new Error('COPPER_APIEMAIL environement variable missing');
+
+const dataPath = path.resolve(__dirname, 'data');
+fs.mkdirSync(dataPath, { recursive: true });
 
 const HEADERS = {
   'X-PW-AccessToken': APIKEY,
@@ -101,79 +105,80 @@ async function waitOrNot() {
   callsCount++;
 }
 
-async function apiPost(path, data) {
+async function apiPost(myPath, data) {
   try {
     await waitOrNot();
-    const res = await superagent.post('https://api.copper.com/developer_api/v1/' + path).set(HEADERS).send(data);
+    const res = await superagent.post('https://api.copper.com/developer_api/v1/' + myPath).set(HEADERS).send(data);
     return res.body;
   } catch (e) {
-    throw new Error(e.message + ' ' + e.response?.text + ' ' + path + ' ' + JSON.stringify(data));
+    throw new Error(e.message + ' ' + e.response?.text + ' ' + myPath + ' ' + JSON.stringify(data));
   }
 }
 
-async function apiPostPaginated(path, data = {}) {
+async function apiPostPaginated(myPath, data = {}) {
   let entityList = []; 
   for (let i = 1; i < 10000; i++ ) {
-    const page = await apiPost(path, Object.assign({page_number: i, 'page_size': 200}, data));
-    console.log(path + ' page: ' + i , data);
+    const page = await apiPost(myPath, Object.assign({page_number: i, 'page_size': 200}, data));
+    console.log(myPath + ' page: ' + i , data);
     entityList.push(...page);
     if (page.length < 200) break;
   } 
   return entityList;
 }
 
-async function apiGet(path, data = {}) {
+async function apiGet(myPath, data = {}) {
   try {
-    console.log(path);
+    console.log(myPath);
     await waitOrNot();
-    const res = await superagent.get('https://api.copper.com/developer_api/v1/' + path).set(HEADERS).query(data);
+    const res = await superagent.get('https://api.copper.com/developer_api/v1/' + myPath).set(HEADERS).query(data);
     return res.body;
   } catch (e) {
-    console.log(e.message, path, data);
+    console.log(e.message, myPath, data);
   }
 }
 
 async function getSave(what) {
-  const path = 'data/' + what + '.json';
-  if (fs.existsSync(path)) return;
+  const myPath = path.resolve(dataPath, what + '.json');
+  if (fs.existsSync(myPath)) return;
   const item = await apiGet(what);
-  fs.writeFileSync(path, JSON.stringify(item, null, 2));
+  fs.writeFileSync(myPath, JSON.stringify(item, null, 2));
 }
 
 async function getItem(entityName) {
-  if (fs.existsSync('data/' + entityName + 'List.json')) return;
+  const filePath = path.resolve(dataPath, entityName + 'List.json');
+  if (fs.existsSync(filePath)) return;
   const entityList = await apiPostPaginated(entityName + '/search', {});
-  fs.writeFileSync('data/' + entityName + 'List.json', JSON.stringify(entityList, null, 2));
+  fs.writeFileSync(filePath , JSON.stringify(entityList, null, 2));
 }
 
 async function getActivities(entityName) {
   // randomize start to avoid 20 calls is the first second
   await new Promise(resolve => setTimeout(resolve, Math.random()*2000));
-  const entityList = require('./data/' + entityName + 'List.json');
-  fs.mkdirSync('data/' + entityName  + 'Activities/', { recursive: true });
+  const entityList = require(path.resolve(dataPath, entityName + 'List.json'));
+  fs.mkdirSync(path.resolve(dataPath, entityName  + 'Activities/'), { recursive: true });
   const type = entityMap[entityName];
 
   for (const entity of entityList) {
-    const path = 'data/' + entityName + 'Activities/' + entity.id + '.json';
-    if (fs.existsSync(path)) continue;
+    const myPath = path.resolve(dataPath, entityName + 'Activities/', entity.id + '.json');
+    if (fs.existsSync(myPath)) continue;
     const parent = {type, id: entity.id}
     const activities = await apiPostPaginated('activities/search', {parent});
-    fs.writeFileSync(path, JSON.stringify(activities, null, 2));
+    fs.writeFileSync(myPath, JSON.stringify(activities, null, 2));
   }
 }
 
 async function getRelated(entityName, fileOrRelated) {
   // randomize start to avoid 20 calls is the first second
   await new Promise(resolve => setTimeout(resolve, Math.random()*2000));
-  const entityList = require('./data/' + entityName + 'List.json');
-  const basePath = 'data/' + entityName  + '-' + fileOrRelated + '/';
+  const entityList = require(path.resolve(dataPath, entityName + 'List.json'));
+  const basePath = path.resolve(dataPath, entityName  + '-' + fileOrRelated + '/');
   fs.mkdirSync(basePath, { recursive: true });
   const type = entityMap[entityName];
 
   for (const entity of entityList) {
-    const path = basePath + entity.id + '.json';
-    if (fs.existsSync(path)) continue;
+    const myPath = path.resolve(basePath, entity.id + '.json');
+    if (fs.existsSync(myPath)) continue;
     const related = await apiGet(entityName + '/' + entity.id + '/' + fileOrRelated);
-    fs.writeFileSync(path, JSON.stringify(related, null, 2));
+    fs.writeFileSync(myPath, JSON.stringify(related, null, 2));
   }
 }
