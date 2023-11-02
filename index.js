@@ -10,8 +10,8 @@ const expectedCallTimeMSec = 60 * 1000 / maxCallsMinute;
 const APIKEY = process.env.COPPER_APIKEY
 const APIEMAIL = process.env.COPPER_EMAIL
 
-if (! APIKEY) throw new Error('COPPER_APIKEY environenemnt variable missing');
-if (! APIEMAIL) throw new Error('COPPER_APIEMAIL environenemnt variable missing');
+if (! APIKEY) throw new Error('COPPER_APIKEY environement variable missing');
+if (! APIEMAIL) throw new Error('COPPER_APIEMAIL environement variable missing');
 
 const HEADERS = {
   'X-PW-AccessToken': APIKEY,
