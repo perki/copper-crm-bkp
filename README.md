@@ -49,5 +49,7 @@ Data is saved in "data/" folder in `json` format.
 An attempt of parallelization has been made with rate-limiting as Copper's API is limiting to 180 calls / minutes.
 The current logic is pretty weak and could be rewritten using a pool of calls and a fixed number of parrallel call to do.
 
+Files that are `links` to external ressources such as Google Drive are saved with as `data/files/{id}.json` items; 
+
 ### Missing 
-- Files and Link to Google Drive 
+- It seems nothing 😅

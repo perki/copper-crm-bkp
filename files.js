@@ -71,11 +71,15 @@ function gatherAllFiles() {
 
   for (const file of files) {
     const filePath = path.resolve(__dirname, './data/files/', file.id + '-' + file.file_name);
-    if (fs.existsSync(filePath) || file.content_type.startsWith('application/vnd.google-apps')) continue;
+    const jsonFilePath = path.resolve(__dirname, './data/files/', file.id + '.json');
+    if (fs.existsSync(filePath) || fs.existsSync(jsonFilePath)) continue;
     try { 
-      const res = await superagent.get('https://app.copper.com/api/v1/companies/' + COMPANY + '/file_documents_api/' + file.id + '/download').set(HEADERS);
-      // console.log(res.redirects[0]);
-      await getFile(res.redirects[0], filePath);
+      const res = await superagent.get('https://app.copper.com/api/v1/companies/' + COMPANY + '/file_documents_api/' + file.id ).set(HEADERS);
+      if (res.redirect[0]) {
+        await getFile(res.redirects[0], filePath);
+      } else {
+        fs.writeFileSync(jsonFilePath, JSON.stringify(res.body, null, 2));
+      }
     } catch (e) {
       console.log(e.message, file);
     }
