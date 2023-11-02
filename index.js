@@ -32,14 +32,15 @@ const HEADERS = {
 let done = false;
 
 (async () => {
-  for (let i = 0; i < 5; i++) {
+  let lastStart = 0;
+  while (!done && (Date.now() - lastStart) > 5000 ) { // retry if last start was more than 5 seconds ago
+    lastStart = Date.now();
     try {
       await bkpCopper();
     } catch (e) {
       console.log(e);
       console.log('*********** RETRYING **********');
     }
-    if (done) break;
   }
 })();
 

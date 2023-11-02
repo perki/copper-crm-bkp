@@ -14,6 +14,7 @@ you need a Copper CRM API KEY  / Copper CRM account email pair
 
 It's possible for multiple reasons (timeouts, over rate limit) that the backup fails or misses items. 
 It is safe to re-run it several times, already fetched items will be skipped.
+On it's own the script will retry on crashes as long as crashes are occuring less than every 5 seconds;
 
 ## Notes 
 
