@@ -20,8 +20,8 @@ It is safe to re-run it several times, already fetched items will be skipped.
 This backup is not incremental it first fetches list of the different items then retrieve them one by one. 
 Data is saved in "data/" folder in `json` format.
 
-Some attempts of parallelization have been made, but they ended up in rate-limiting Errors from Copper's API which is limiting to 180 calls / minutes.
-This is why this code is not optimitzed and uses intensively fs.Sync methods and executing calls in series.
+An attempt of parallelization has been made with rate-limiting as Copper's API is limiting to 180 calls / minutes.
+The current logic is pretty weak and could be rewritten using a pool of calls and a fixed number of parrallel call to do.
 
 ### Missing 
 - Files

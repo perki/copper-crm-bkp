@@ -34,35 +34,40 @@ const HEADERS = {
   for (const item of Object.keys(entityMap)) {
     await getItem(item);
   }
+  await Promise.all([
+
+  ]);
+  const promises = [];
   for (const item of Object.keys(entityMap)) {
-    await getActivities(item);
+    promises.push(getActivities(item));
+    promises.push(getRelated(item, 'related'));
+    if (item != 'tasks') promises.push(getRelated(item, 'files'));
   }
-  for (const item of Object.keys(entityMap)) {
-    await getRelated(item, 'related');
-    await getRelated(item, 'files');
-  }
+  await Promise.all(promises);
 })();
 
 let callsCount = 0;
-let waitBetweenCalls = 0;
+let waitBetweenCalls = 1800;
 const checkRateMs = 10*1000;
-const maxCallsMinute = 30;
+const maxCallsMinute = 170; // Max 180
 const expectedCallTimeMSec = 60 * 1000 / maxCallsMinute;
 /**
  * Check rate is called every 10 seconds, it avoids being over the 180 calls/minutes
+ * The logic is pretty weak but does the job, feel free to rewrite ;)
  */
 async function checkRate() {
-  const actualCallTimeMSec = checkRateMs / (callsCount + 0.0001);
-  waitBetweenCalls += expectedCallTimeMSec - actualCallTimeMSec;
-  console.log('Actual callTime: ' + actualCallTimeMSec + ' expected: ' + expectedCallTimeMSec);
-  if (waitBetweenCalls < 0) waitBetweenCalls = 0;
-  if (waitBetweenCalls > expectedCallTimeMSec) waitBetweenCalls = expectedCallTimeMSec;
   const actualCallrateMin = (60 * 1000 / checkRateMs) * callsCount;
+  const actualCallTimeMSec = checkRateMs / (callsCount + 0.0001);
+  waitBetweenCalls += (expectedCallTimeMSec - actualCallTimeMSec) * (actualCallrateMin / maxCallsMinute);
+  console.log('Average callTime: ' + actualCallTimeMSec + ' expected: ' + expectedCallTimeMSec );
+  if (waitBetweenCalls < 0) waitBetweenCalls = 0;
+  //if (waitBetweenCalls > expectedCallTimeMSec) waitBetweenCalls = expectedCallTimeMSec;
+  
   console.log('Call Rate: ' + actualCallrateMin + ' wait: ' + waitBetweenCalls / 1000);
   callsCount = 0;
   setTimeout(checkRate, checkRateMs);
 }
-checkRate();
+setTimeout(checkRate, checkRateMs);
 
 async function waitOrNot() {
   if (waitBetweenCalls > 0) {
@@ -99,7 +104,7 @@ async function apiGet(path, data = {}) {
     const res = await superagent.get('https://api.copper.com/developer_api/v1/' + path).set(HEADERS).query(data);
     return res.body;
   } catch (e) {
-    console.log(e.message);
+    console.log(e.message, path, data);
   }
 }
 
