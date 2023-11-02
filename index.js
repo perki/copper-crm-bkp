@@ -29,7 +29,21 @@ const HEADERS = {
   'leads': 'lead'
 };
 
+let done = false;
+
 (async () => {
+  for (let i = 0; i < 5; i++) {
+    try {
+      await bkpCopper();
+    } catch (e) {
+      console.log(e);
+      console.log('*********** RETRYING **********');
+    }
+    if (done) break;
+  }
+})();
+
+async function bkpCopper () {
   // this sequencial, we can start with no rate limiting
   waitBetweenCalls = 150;
   for (const item of [
@@ -54,7 +68,8 @@ const HEADERS = {
   // this is done in parallel, we can set rate limiting to a higher value 
   waitBetweenCalls = 2000;
   await Promise.all(promises);
-})();
+  done = true;
+};
 
 /**
  * Check rate is called every 10 seconds, it avoids being over the 180 calls/minutes
@@ -70,7 +85,7 @@ async function checkRate() {
   
   console.log('Call Rate: ' + pretty(actualCallrateMin) + ' wait: ' + pretty(waitBetweenCalls / 1000));
   callsCount = 0;
-  setTimeout(checkRate, checkRateMs);
+  if (! done) setTimeout(checkRate, checkRateMs);
 }
 setTimeout(checkRate, checkRateMs);
 
