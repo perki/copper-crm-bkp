@@ -31,7 +31,7 @@ async function go() {
     });
     if (Object.keys(filtered).length !== Object.keys(definitions).length) save = true;
 
-    if (save) { 
+    if (save) {
       fs.writeFileSync(filePath, JSON.stringify(filtered, null, 2));
       console.log('Updated: ' + objectType);
     }

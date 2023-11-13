@@ -1,3 +1,6 @@
+const {fs, path, dataCurrentPath, dataConfPath, dataSourcePath} = require('./lib/pathsAndFS');
+
+
 function convertPeople(p) {
   const person = structuredClone(p);
   const contact = {
@@ -117,18 +120,25 @@ function convertPeople(p) {
   return contact;
 };
 
-function getOwner(id) {
-  return 'to implement';
+const ownersArray = require('../data-hubspot/conf/ownersMap.json');
+const ownersByCopperIdMap = {};
+for (const owner of ownersArray) {
+  if (owner.copper == null) throw new Error('Missing copper Id for owner ' + JSON.stringify(owner) + ' in data-hubspot/conf/ownersMap.json');
+  ownersByCopperIdMap[owner.copper + ''] = owner;
 }
 
-const fs = require('fs');
-const path = require('path');
+function getOwner(copperId) {
+  if (copperId == null) return null;
+  const owner = ownersByCopperIdMap[copperId + ''];
+  if (owner == null) throw new Error('Cannot find owner with copperId: ' + copperId);
+  const hubspotId = owner.hubspot?.userId;
+  if (hubspotId == null) throw new Error('Cannot find hubspot.userId for copperId: ' + copperId);
+  return hubspotId;
+}
+
 const people = require('../data/peopleList.json');
 
 const contacts = people.map(convertPeople);
 
-const hubDestPath = path.resolve(__dirname, '../data-hubspot/source');
-fs.mkdirSync(hubDestPath, {recursive: true});
-
-const hubDest = path.resolve(hubDestPath, 'contacts.json');
+const hubDest = path.resolve(dataSourcePath, 'contacts.json');
 fs.writeFileSync(hubDest, JSON.stringify(contacts, null, 2));
