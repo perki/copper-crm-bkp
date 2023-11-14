@@ -22,53 +22,65 @@ for (const cf of customFields.filter((c) => c.data_type === 'Connect')) {
   }
 }
 
+const mapType = {
+  'company': 'company',
+  'person': 'contact',
+  'lead': 'contact',
+  'opportunity': 'deal',
+  'project': 'project'
+}
 
 for (const cf of customFields) {
+  if (cf.data_type === 'Connect') continue; // ignore connections
+
   for (const type of cf.available_on) {
-    if (data[type] == null) data[type] = {};
-    if (data[type][cf.id + '']) continue; // skip existing types
+    if (data[mapType[type]] == null) data[mapType[type]] = {};
+    if (data[mapType[type]][cf.id + '']) continue; // skip existing types
 
     const def = {
       name: cf.name,
-      dest: 'extras'
+      dest: 'extras.others'
     }
     switch (cf.data_type) {
       case 'String':
         def.handle = 'Copy';
         break;
       case 'Date':
-        def.handle = 'DateToString'
+        def.handle = 'DateToString';
         break;
       case 'Dropdown':
-        def.handle = 'Map'
+        def.handle = 'MapItem';
         def.conf = {};
         for (const o of cf.options) {
           def.conf[o.id + ''] = o.name;
         }
         break;
-      case 'Multiselect':
-        def.handle = 'MapMulti'
+      case 'MultiSelect':
+        def.handle = 'MapMulti';
         def.conf = {};
         for (const o of cf.options) {
           def.conf[o.id + ''] = o.name;
         }
-        break;
-      case 'Connect':
-        // ignore ??
         break;
       case 'Checkbox':
-        def.handle = 'Bool'
+        def.handle = 'Bool';
         break;
       case 'Float':
-        def.handle = 'Number'
+        def.handle = 'Num';
+        break;
+      case 'URL':
+        def.handle = 'Copy';
+        def.dest = 'extra.websites';
         break;
       default:
-        console.log('Unkown type: ' + def.data_type)
+        console.log('Unkown type: ', cf)
     }
 
-    data[type][cf.id + ''] = def;
+    data[mapType[type]][cf.id + ''] = def;
   }
 }
+
+
 
 fs.writeFileSync(connectionFile, JSON.stringify(connects, null, 2));
 fs.writeFileSync(definitionFiles, JSON.stringify(data, null, 2));

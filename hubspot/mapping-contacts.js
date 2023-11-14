@@ -1,5 +1,7 @@
 const { fs, path, dataCurrentPath, dataConfPath, dataSourcePath } = require('./lib/pathsAndFS');
 
+const handleCustomFields = require('./lib/handleCustomFields');
+
 const customerSourceIdsMap = {};
 for (const cs of require('../data/customer_sources.json')) {
   customerSourceIdsMap[cs.id + ''] = cs.name;
@@ -36,7 +38,7 @@ function convertPeople(p) {
   delete person.company_id;
 
   // emails
-  const extras = { emails: [] };
+  const extras = { emails: [],  websites: [],  socials: [], phones: [], others: []};
   if (person.email) {
     contact.work_email = person.email;
     delete person.email;
@@ -56,7 +58,6 @@ function convertPeople(p) {
 
   // websites
   if (person.websites) {
-    extras.websites = [];
     for (const item of person.websites) {
       if (item.url.startsWith('https://podio')) continue;
       if (contact.website == null) {
@@ -69,7 +70,6 @@ function convertPeople(p) {
   }
 
   // socials
-  extras.socials = [];
   if (person.socials) {
     for (const social of person.socials) {
       if (social.category === 'twitter' && contact.twitterhandle == null) {
@@ -102,7 +102,6 @@ function convertPeople(p) {
   }
 
   // others
-  extras.others = [];
   for (const d of ['date_created', 'date_modified', 'date_lead_created', 'date_last_contacted']) {
     if (person[d] != null) extras.others.push(d + ': ' + Date(person[d]).toString());
     delete person[d];
@@ -124,6 +123,13 @@ function convertPeople(p) {
   // contact_type_id 
   // tags 0,1
 
+  if (person.custom_fields) {
+    contact.extras = extras;
+    handleCustomFields('contact', person.custom_fields, contact);
+    delete person.custom_fields;
+    delete contact.extras;
+  }
+
   // cleanup empty fields
   for (const k of Object.keys(contact)) {
     const v = contact[k];
@@ -140,12 +146,16 @@ function convertPeople(p) {
   }
 
 
-  contact.note = '>>> AT IMPORT FROM COPPER <<<\n\n' + person.details ? p.details + '\n\n' : '';
+  contact.note = '>>> AT IMPORT FROM COPPER ' + Date().toString() + ' <<<\n\n';
+  
+  if (person.details) contact.note += p.details + '\n\n';
   delete person.details;
 
-  if (notes.length > 0)
+  if (notes.length > 0) {
     contact.note += notes.join('\n\n');
+  }
 
+  console.log(contact.note);
 
   // count unmatched fields
   for (const k of Object.keys(person)) {
