@@ -117,6 +117,10 @@ function convertPeople(p) {
     delete person.customer_source_id;
   }
 
+  // id 
+  contact.copperid = person.id;
+  delete person.id;
+
   // name
   // middle_name
   // suffix
@@ -146,16 +150,16 @@ function convertPeople(p) {
   }
 
 
-  contact.note = '>>> AT IMPORT FROM COPPER ' + Date().toString() + ' <<<\n\n';
+  contact.description = '>>> AT IMPORT FROM COPPER ' + Date().toString() + ' <<<\n\n';
   
-  if (person.details) contact.note += p.details + '\n\n';
+  if (person.details) contact.description += p.details + '\n\n';
   delete person.details;
 
   if (notes.length > 0) {
-    contact.note += notes.join('\n\n');
+    contact.description += notes.join('\n\n');
   }
 
-  console.log(contact.note);
+  //console.log(contact.description);
 
   // count unmatched fields
   for (const k of Object.keys(person)) {

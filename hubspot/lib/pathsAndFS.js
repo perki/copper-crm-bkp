@@ -13,11 +13,15 @@ fs.mkdirSync(dataSourcePath, {recursive: true});
 const dataConfPath = path.resolve(dataPath, 'conf');
 fs.mkdirSync(dataConfPath, {recursive: true});
 
+const dataPropertiesPath = path.resolve(dataPath, 'properties');
+fs.mkdirSync(dataPropertiesPath, {recursive: true});
+
 module.exports = {
   fs,
   path,
   dataPath,
   dataConfPath,
   dataCurrentPath,
-  dataSourcePath
+  dataSourcePath,
+  dataPropertiesPath
 }
