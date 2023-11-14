@@ -1,5 +1,11 @@
-const {fs, path, dataCurrentPath, dataConfPath, dataSourcePath} = require('./lib/pathsAndFS');
+const { fs, path, dataCurrentPath, dataConfPath, dataSourcePath } = require('./lib/pathsAndFS');
 
+const customerSourceIdsMap = {};
+for (const cs of require('../data/customer_sources.json')) {
+  customerSourceIdsMap[cs.id + ''] = cs.name;
+}
+
+const umatchedFields = {};
 
 function convertPeople(p) {
   const person = structuredClone(p);
@@ -13,99 +19,117 @@ function convertPeople(p) {
     state: person.address?.state,
     zip: person.address?.zip,
     country: person.address?.country,
+    company: person.company_name,
   }
+  for (const f of ['prefix', 'first_name', 'last_name', 'title', 'address', 'company_name']) delete person[f];
 
+  // ignored fields
+  for (const f of ['suffix', 'leads_converted_from', 'converted_unit', 'monetary_unit', 'monetary_value', 'converted_value', 'middle_name']) delete person[f];
 
 
   // owner
   contact.hubspot_owner_id = getOwner(person.assignee_id);
+  delete person.assignee_id;
 
   // associated companyId
-  // contact.associatedcompanyid
+  contact.associatedcompanyid = getCompanyId(person.company_id);
+  delete person.company_id;
 
-  const extras = {emails: []};
   // emails
-  for (const email of person.emails) {
-    if (email.category === 'work' && contact.work_email == null) {
-      contact.work_email = email.email;
-    } else if (email.category === 'home' && contact.email == null) {
-      contact.email = email.email;
-     } else {
-      extras.emails.push(email.category + ': ' + email.email);
+  const extras = { emails: [] };
+  if (person.email) {
+    contact.work_email = person.email;
+    delete person.email;
+  }
+  if (person.emails) {
+    for (const email of person.emails) {
+      if (email.category === 'work' && contact.work_email == null) {
+        contact.work_email = email.email;
+      } else if (email.category === 'home' && contact.email == null) {
+        contact.email = email.email;
+      } else {
+        extras.emails.push(email.category + ': ' + email.email);
+      }
     }
+    delete person.emails;
   }
 
   // websites
-  extras.websites = [];
-  for (const item of person.websites) {
-    if (item.url.startsWith('https://podio')) continue;
-    if (contact.website == null) {
-      contact.website = item.url;
-    } else {
-      extras.websites.push(item.category + ': ' + item.url);
+  if (person.websites) {
+    extras.websites = [];
+    for (const item of person.websites) {
+      if (item.url.startsWith('https://podio')) continue;
+      if (contact.website == null) {
+        contact.website = item.url;
+      } else {
+        extras.websites.push(item.category + ': ' + item.url);
+      }
     }
+    delete person.websites;
   }
 
   // socials
   extras.socials = [];
-  for (const social of person.socials) {
-    if (social.category === 'twitter' && contact.twitterhandle == null) {
-      contact.twitterhandle = social.url.split('/').pop();
-    } else if (social.category === 'linkedin' && contact.hs_linkedinid == null) {
-      const s = social.url.split('/');
-      do {
-        contact.hs_linkedinid = s.pop();
-      } while (s.length > 0 && contact.hs_linkedinid === '');
-    } else {
-      extras.socials.push(social.category + ': ' + social.url);
+  if (person.socials) {
+    for (const social of person.socials) {
+      if (social.category === 'twitter' && contact.twitterhandle == null) {
+        contact.twitterhandle = social.url.split('/').pop();
+      } else if (social.category === 'linkedin' && contact.hs_linkedinid == null) {
+        const s = social.url.split('/');
+        do {
+          contact.hs_linkedinid = s.pop();
+        } while (s.length > 0 && contact.hs_linkedinid === '');
+      } else {
+        extras.socials.push(social.category + ': ' + social.url);
+      }
     }
+    delete person.socials;
   }
 
   // phone
-  extras.phones = [];
-  for (const phone of person.phone_numbers) {
-    if (phone.category === 'mobile' && contact.mobilephone == null) {
-      contact.mobilephone = phone.number;
-    } else if (phone.category === 'work' && contact.phone == null) {
-      contact.phone = phone.number;
-    } else {
-      extras.phones.push(phone.category + ': ' + phone.number);
+  if (person.phone_numbers) {
+    extras.phones = [];
+    for (const phone of person.phone_numbers) {
+      if (phone.category === 'mobile' && contact.mobilephone == null) {
+        contact.mobilephone = phone.number;
+      } else if (phone.category === 'work' && contact.phone == null) {
+        contact.phone = phone.number;
+      } else {
+        extras.phones.push(phone.category + ': ' + phone.number);
+      }
     }
+    delete person.phone_numbers;
+  }
+
+  // others
+  extras.others = [];
+  for (const d of ['date_created', 'date_modified', 'date_lead_created', 'date_last_contacted']) {
+    if (person[d] != null) extras.others.push(d + ': ' + Date(person[d]).toString());
+    delete person[d];
+  }
+  for (const f of ['name', 'interaction_count']) {
+    if (person[f] != null) extras.others.push(f + ': ' + person[f]);
+    delete person[f];
+  }
+
+  // customer source
+  if (person.customer_source_id) {
+    extras.others.push('customer_source: ' + customerSourceIdsMap[person.customer_source_id]);
+    delete person.customer_source_id;
   }
 
   // name
   // middle_name
   // suffix
-  // assignee_id
-  // company_id 
-  // company_name
   // contact_type_id 
   // tags 0,1
-  // custom fields 
-    // ...... 
-  // date_created
-  // date_modified
-  // lead_converted_from
-  // details 
-  // custom 345947 => createdBy (string)
-  // custom 345948 => createdOn (date)
-  // custom 353217 => Also active in company (Connect)
-  // custom 353223 => Was active in company (Connect)
-  // custom 354201 => Involved in opportunities (Connect)
-  // custom 427797 => Follow up Ranks( )
-  // custom 523707 => relashinship (string)
-  // custom 523708 => O2B Campaign
-  // custom 523709 => Industry Target
-  // custom 523710 => Call- done (string)
-  // custom 523711 => When spoke to? (string)
-  // custom 523712 => Next Steps (string)
 
   // cleanup empty fields
   for (const k of Object.keys(contact)) {
     const v = contact[k];
-    if (v == null || (Array.isArray(v) && v.length === 0)) { 
+    if (v == null || (Array.isArray(v) && v.length === 0)) {
       delete contact[k];
-    } 
+    }
   }
 
   const notes = [];
@@ -114,8 +138,20 @@ function convertPeople(p) {
     if (entries.length === 0) continue;
     notes.push('**** ' + key + ' ****\n' + entries.join('\n'));
   }
-  if (notes.length > 0) 
-    contact.note = notes.join('\n\n');
+
+
+  contact.note = '>>> AT IMPORT FROM COPPER <<<\n\n' + person.details ? p.details + '\n\n' : '';
+  delete person.details;
+
+  if (notes.length > 0)
+    contact.note += notes.join('\n\n');
+
+
+  // count unmatched fields
+  for (const k of Object.keys(person)) {
+    if (umatchedFields[k] == null) umatchedFields[k] = 0;
+    umatchedFields[k]++;
+  }
 
   return contact;
 };
@@ -136,9 +172,19 @@ function getOwner(copperId) {
   return hubspotId;
 }
 
-const people = require('../data/peopleList.json');
+function getCompanyId(copperId) {
+  return 'TODO for ' + copperId;
+}
 
+
+const people = require('../data/peopleList.json');
 const contacts = people.map(convertPeople);
+
+const leads = require('../data/leadsList.json');
+contacts.push(...leads.map(convertPeople));
+
 
 const hubDest = path.resolve(dataSourcePath, 'contacts.json');
 fs.writeFileSync(hubDest, JSON.stringify(contacts, null, 2));
+
+console.log({umatchedFields});

@@ -16,4 +16,9 @@ This will create or update  `../data-hubspot/conf/ownersMap.json` with new entri
 
 You should MANUALY do the matching by completing `copper` field with copperId.
 
+### Prepare custom fields matching 
+
+run `node hubspot/prepareFieldsMapping.js` to create 
+- `../data-hubspot/conf/custom_def.json` you should check and eventually change the matching proposed automatically
+
 

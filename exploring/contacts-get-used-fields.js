@@ -1,7 +1,8 @@
 /**
  * read data/peopleList and extract all fields used with non-null values
  */
-const contacts = require('../data/peopleList.json');
+// const contacts = require('../data/peopleList.json');
+const contacts = require('../data/leadsList.json');
 
 const used = {};
 
