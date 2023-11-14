@@ -1,3 +1,7 @@
+/**
+ * Remove empty files
+ */
+
 const path = require("path");
 const fs   = require("fs");
 
@@ -15,4 +19,4 @@ function loop(dir) {
   });
 }
 
-loop(path.resolve(__dirname, './data'));
+loop(path.resolve(__dirname, '../data'));
