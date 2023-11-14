@@ -41,6 +41,12 @@ Set the company code as environement variable `COPPER_COMPANY` and the cookies s
 
 run `node files.js`
 
+### extras
+
+`node clean/cleanFiles.js` will remove all data files containing an empty array
+
+`node clean/removeEmptyfields.js` will remove empty and unsued fields from the backup .. MAKE A BACKUP OF `./data` before running!
+
 ## Notes 
 
 This backup is not incremental it first fetches list of the different items then retrieve them one by one. 

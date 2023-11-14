@@ -1,5 +1,5 @@
 /**
- * Remove empty files
+ * Remove all files containing only an empty array.
  */
 
 const path = require("path");
