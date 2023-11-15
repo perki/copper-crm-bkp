@@ -3,29 +3,22 @@ const { getSocialsFor, getPhonesFor, getWebsites, getOwner } = require('./lib-ma
 
 module.exports = {
   directs: {
-    prefix: 'salutation',
-    first_name: 'firstname',
-    last_name: 'lastname',
-    title: 'jobtitle',
     'address.street': 'street',
     'address.city': 'city',
     'address.state': 'state',
     'address.postal_code': 'zip',
     'address.country': 'country',
-    'company_name': 'company'
+    'name': 'name',
+    'email_domain': 'domain'
   },
   ignores: [
-    'status', // managed by status_id 
-    'suffix', 'leads_converted_from', 'converted_unit', 'monetary_unit', 'monetary_value', 'converted_value', 'middle_name'
+    
   ],
   methods: {
-    'email': getEmail,
-    'emails': getEmails,
     'assignee_id': getOwner,
-    'company_id': getCompanyId,
+    'socials': getSocialsFor('company'),
     'websites': getWebsites,
-    'socials': getSocialsFor('contact'),
-    'phone_numbers': getPhonesFor('contact')
+    'phone_numbers': getPhonesFor('company')
   },
   others: {
     'date_created': 'date', 
@@ -36,6 +29,14 @@ module.exports = {
     'interaction_count': 'direct'
   }
 }
+
+const ownersArray = require('../../data-hubspot/conf/ownersMap.json');
+const ownersByCopperIdMap = {};
+for (const owner of ownersArray) {
+  if (owner.copper == null) throw new Error('Missing copper Id for owner ' + JSON.stringify(owner) + ' in data-hubspot/conf/ownersMap.json');
+  ownersByCopperIdMap[owner.copper + ''] = owner;
+}
+
 
 
 function getEmail(email, hubspotItem) {
@@ -54,6 +55,12 @@ function getEmails(emails, hubspotItem) {
     }
   }
 }
+
+
+
+
+
+
 
 function getCompanyId(copperCompanyId, hubspotItem) {
   // TODO

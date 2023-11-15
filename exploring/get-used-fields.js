@@ -1,13 +1,14 @@
 /**
  * read data/peopleList and extract all fields used with non-null values
  */
-// const contacts = require('../data/peopleList.json');
-const contacts = require('../data/leadsList.json');
+// const items = require('../data/peopleList.json');
+// const items = require('../data/leadsList.json');
+const items = require('../data/companiesList.json');
 
 const used = {};
 
-for (const person of contacts) {
-  inspect(person);
+for (const item of items) {
+  inspect(item);
   
 }
 console.log(used);

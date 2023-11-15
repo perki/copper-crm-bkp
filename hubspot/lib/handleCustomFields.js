@@ -50,8 +50,8 @@ function handleCustomFields(type, customFields, hubspotItem) {
   for (const cf of customFields) {
     if (cf.value == null) continue;
     const def = customDefs[type][cf.custom_field_definition_id + ''];
-    if (def === null) throw new Error('Cannot find customField def: ' + cf.custom_field_definition_id + ' for ' + type);
-    
+    if (def == null) throw new Error('Cannot find customField def: ' + cf.custom_field_definition_id + ' for ' + type + '>' + JSON.stringify(cf));
+
     const value = handles[def.handle](cf.value, def.conf);
     handleDest(def, value, hubspotItem);
     

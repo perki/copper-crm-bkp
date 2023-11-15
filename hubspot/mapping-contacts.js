@@ -7,10 +7,11 @@ for (const cs of require('../data/customer_sources.json')) {
   customerSourceIdsMap[cs.id + ''] = cs.name;
 }
 
-const umatchedFields = {};
+let umatchedFields = {};
 
 const convertConfs = {
-  contact: require('./maps/contact')
+  contact: require('./maps/contact'),
+  company: require('./maps/company')
 }
 
 function convert(type, item) {
@@ -115,14 +116,26 @@ function convert(type, item) {
 };
 
 
-const people = require('../data/peopleList.json');
-const contacts = people.map((p) => convert('contact', p));
+if (false) {
+  let umatchedFields = {};
+  const people = require('../data/peopleList.json');
+  const contacts = people.map((p) => convert('contact', p));
+  const leads = require('../data/leadsList.json');
+  contacts.push(...leads.map((p) => convert('contact', p)));
 
-const leads = require('../data/leadsList.json');
-contacts.push(...leads.map((p) => convert('contact', p)));
+  const hubDest = path.resolve(dataSourcePath, 'contacts.json');
+  fs.writeFileSync(hubDest, JSON.stringify(contacts, null, 2));
+  console.log({umatchedFields});
+}
+
+if (true) {
+  let umatchedFields = {};
+  const people = require('../data/companiesList.json');
+  const companies = people.map((p) => convert('company', p));
+  
+  const hubDest = path.resolve(dataSourcePath, 'companies.json');
+  fs.writeFileSync(hubDest, JSON.stringify(companies, null, 2));
+  console.log({umatchedFields});
+}
 
 
-const hubDest = path.resolve(dataSourcePath, 'contacts.json');
-fs.writeFileSync(hubDest, JSON.stringify(contacts, null, 2));
-
-console.log({umatchedFields});
