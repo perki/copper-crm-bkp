@@ -14,6 +14,7 @@ function MapItem(s, conf) {
 }
 
 function MapItemSELECT(s, conf) {
+  if (conf[s + ''] == null) console.log(s, conf);
   return conf[s + ''].value;
 }
 

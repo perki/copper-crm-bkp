@@ -134,6 +134,24 @@ if (! fieldsDef.contact?.status_id) {
   };
 }
 
+if (! fieldsDef.contact?.customer_source_id) {
+  const conf = {};
+  for (const cs of require('../data/customer_sources.json')) {
+    conf[cs.id + ''] = {
+      label: cs.name,
+      value: slug(cs.name, '_').toUpperCase()
+    }
+  }
+  fieldsDef.contact.customer_source_id = {
+    name: 'Customer Source',
+    dest: 'customer_source',
+    groupName: 'sales_properties',
+    fieldType: 'select',
+    handle: 'MapItemSELECT',
+    conf
+  };
+}
+
 fs.writeFileSync(connectionFile, JSON.stringify(connects, null, 2));
 fs.writeFileSync(customDefFiles, JSON.stringify(customDef, null, 2));
 fs.writeFileSync(fieldsDefFiles, JSON.stringify(fieldsDef, null, 2));
