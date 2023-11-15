@@ -10,6 +10,7 @@
   "license": "BSD-3-Clause",
   "dependencies": {
     "@hubspot/api-client": "^10.0.0",
+    "slug": "^8.2.3",
     "superagent": "^8.1.2"
   }
 }

@@ -4,6 +4,7 @@ const getCurrentProperties = require('./getProperties');
 
 
 const customDefs = require('../data-hubspot/conf/custom_def.json');
+const fieldDefs = require('../data-hubspot/conf/fields_def.json');
 
 const HUBSPOT_TOKEN = process.env.HUBSPOT_TOKEN;
 if (!HUBSPOT_TOKEN) throw new Error('HUBSPOT_TOKEN environement variable missing');
@@ -64,16 +65,19 @@ function getProperties(type, currentProps) {
     ],
     update: []
   };
-  
+
+
+
   // check properties from custom_def
-  checkExistingProps(type, currentProps, todo);
+  checkExistingPropsVsDefinition(customDefs, type, currentProps, todo);
+  // check properties from custom_def
+  checkExistingPropsVsDefinition(fieldDefs, type, currentProps, todo);
 
   return todo;
 }
 
 
 (async () => {
-  
   for (const type of Object.keys(typesMap)) {
     console.log('**** ' + type);
 
@@ -100,65 +104,64 @@ function getProperties(type, currentProps) {
       await getCurrentProperties(typesMap[type], true);
     }
   }
- })();
+})();
 
 
+function checkExistingPropsVsDefinition(definitions, type, currentProps, todo) {
+  const typeDefs = definitions[type];
+  if (!typeDefs) return;
 
- function checkExistingProps(type, currentProps, todo) {
-  const typeCustomDefs = customDefs[type];
-  if (typeCustomDefs) {
-    for (const k of Object.keys(typeCustomDefs)) {
-      const def = typeCustomDefs[k];
-      if (def.dest.startsWith('extra')) continue;
-           
-      const matchingProp = currentProps.find((p) => p.name === def.dest);
+  for (const k of Object.keys(typeDefs)) {
+    const def = typeDefs[k];
+    if (def.dest.startsWith('extra')) continue;
 
-      if (matchingProp) { // Found;
-        let action = null;
-        // check if OK
-        if (def.handle === 'MapItemSELECT') {
-          if (matchingProp.type !== 'enumeration' || matchingProp.fieldType !== 'select' ) {
-            console.log('>>' + type + ' Wrong type for def', def);
-            throw new Error('Cannot update');
-          }
-          // hide all existing option
-          const options = structuredClone(matchingProp.options).map((o) => { 
-            o.hidden = true;
-            return o;
-          });
-          
-          for (const oKey of Object.keys(def.conf)) {
-            const oVal = def.conf[oKey];
-            const matchedOption = matchingProp.options.find((o) => o.value === oVal.value);
-            if (! matchedOption) {
-              console.log('>>' +type + '>' + def.name + ' missing option: ' + oVal.value);
-              options.push(oVal);
-              action = 'update';
-            } else {
-              matchedOption.hidden = false;
-            }
-          }
-          if (action != null) {
-            const propObj = {
-              name: def.dest,
-              options: options
-            };
-            todo.update.push(propObj);
+    const matchingProp = currentProps.find((p) => p.name === def.dest);
+
+    if (matchingProp) { // Found;
+      let action = null;
+      // check if OK
+      if (def.handle === 'MapItemSELECT') {
+        if (matchingProp.type !== 'enumeration' || matchingProp.fieldType !== 'select') {
+          console.log('>>' + type + ' Wrong type for def', def);
+          throw new Error('Cannot update');
+        }
+        // hide all existing option
+        const options = structuredClone(matchingProp.options).map((o) => {
+          o.hidden = true;
+          return o;
+        });
+
+        for (const oKey of Object.keys(def.conf)) {
+          const oVal = def.conf[oKey];
+          const matchedOption = matchingProp.options.find((o) => o.value === oVal.value);
+          if (!matchedOption) {
+            console.log('>>' + type + '>' + def.name + ' missing option: ' + oVal.value);
+            options.push(oVal);
+            action = 'update';
+          } else {
+            matchedOption.hidden = false;
           }
         }
-      } else {
-        const propObj = {
-          name: def.dest,
-          label: def.name,
-          propertyUpdate: 'options',
-          hasUniqueValue: false,
-          type: 'enumeration',
-          fieldType: 'select',
-          options: Object.values(def.conf)
+        if (action != null) {
+          const propObj = {
+            name: def.dest,
+            options: options
+          };
+          todo.update.push(propObj);
         }
-        todo.create.push(propObj);
       }
-      
+    } else {
+      const propObj = {
+        name: def.dest,
+        label: def.name,
+        groupName: type + 'information',
+        propertyUpdate: 'options',
+        hasUniqueValue: false,
+        type: 'enumeration',
+        fieldType: 'select',
+        options: Object.values(def.conf)
+      }
+      todo.create.push(propObj);
     }
   }
- }
+}

@@ -1,6 +1,6 @@
 const { fs, path, dataCurrentPath, dataConfPath, dataSourcePath } = require('./lib/pathsAndFS');
 
-const handleCustomFields = require('./lib/handleCustomFields');
+const { handleCustomFields, handleFields } = require('./lib/handleCustomFields');
 
 const customerSourceIdsMap = {};
 for (const cs of require('../data/customer_sources.json')) {
@@ -134,6 +134,8 @@ function convertPeople(p) {
     delete contact.extras;
   }
 
+  handleFields('contact', person, contact);
+
   // cleanup empty fields
   for (const k of Object.keys(contact)) {
     const v = contact[k];
@@ -158,8 +160,6 @@ function convertPeople(p) {
   if (notes.length > 0) {
     contact.description += notes.join('\n\n');
   }
-
-  //console.log(contact.description);
 
   // count unmatched fields
   for (const k of Object.keys(person)) {
