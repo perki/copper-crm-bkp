@@ -85,6 +85,7 @@ for (const cf of customFields) {
   }
 }
 
+
 // ------ contacts ------------  //
 if (! fieldsDef.contact) fieldsDef.contact = {};
 if (! fieldsDef.contact?.contact_type_id) {
@@ -101,9 +102,36 @@ if (! fieldsDef.contact?.contact_type_id) {
     name: 'Contact Type',
     dest: 'copper_contact_type',
     handle: 'MapItemSELECT',
+    fieldType: 'select',
     conf
   };
-  console.log(fieldsDef);
+}
+
+if (! fieldsDef.contact?.status_id) {
+  const copperLeadStatuses = require('../data/lead_statuses.json');
+  const hubspotDefaultMap = {
+    '1000860': 'NEW',
+    '1000861': 'OPEN', // Qualified
+    '1000861': 'IN_PROGRESS',
+    '1000862': 'UNQUALIFIED'
+  }
+
+
+  const conf = {};
+  for (const cls of copperLeadStatuses) {
+    conf[cls.id + ''] = {
+      label: cls.name,
+      value: hubspotDefaultMap[cls.id + ''] || slug(cls.name, '_').toUpperCase()
+    }
+  }
+  fieldsDef.contact.status_id = {
+    name: 'Lead Status',
+    dest: 'hs_lead_status',
+    groupName: 'sales_properties',
+    fieldType: 'radio',
+    handle: 'MapItemSELECT',
+    conf
+  };
 }
 
 fs.writeFileSync(connectionFile, JSON.stringify(connects, null, 2));

@@ -61,6 +61,13 @@ function getProperties(type, currentProps) {
       hasUniqueValue: false,
       type: 'string',
       fieldType: 'textarea'
+    }, {
+      groupName: type + 'information',
+      name: 'tags',
+      label: 'Tags',
+      hasUniqueValue: false,
+      type: 'string',
+      fieldType: 'text'
     }
     ],
     update: []
@@ -121,8 +128,9 @@ function checkExistingPropsVsDefinition(definitions, type, currentProps, todo) {
       let action = null;
       // check if OK
       if (def.handle === 'MapItemSELECT') {
-        if (matchingProp.type !== 'enumeration' || matchingProp.fieldType !== 'select') {
-          console.log('>>' + type + ' Wrong type for def', def);
+        def.fieldType = def.fieldType || 'select';
+        if (matchingProp.type !== 'enumeration' || matchingProp.fieldType !== def.fieldType) {
+          console.log('>>' + type + ' Wrong type for def', def, 'Required: ' + matchingProp.fieldType);
           throw new Error('Cannot update');
         }
         // hide all existing option
@@ -154,11 +162,11 @@ function checkExistingPropsVsDefinition(definitions, type, currentProps, todo) {
       const propObj = {
         name: def.dest,
         label: def.name,
-        groupName: type + 'information',
+        groupName: def.groupName || type + 'information',
         propertyUpdate: 'options',
         hasUniqueValue: false,
         type: 'enumeration',
-        fieldType: 'select',
+        fieldType: def.fieldType,
         options: Object.values(def.conf)
       }
       todo.create.push(propObj);

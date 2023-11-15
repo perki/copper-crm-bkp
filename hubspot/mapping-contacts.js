@@ -26,7 +26,7 @@ function convertPeople(p) {
   for (const f of ['prefix', 'first_name', 'last_name', 'title', 'address', 'company_name']) delete person[f];
 
   // ignored fields
-  for (const f of ['suffix', 'leads_converted_from', 'converted_unit', 'monetary_unit', 'monetary_value', 'converted_value', 'middle_name']) delete person[f];
+  for (const f of ['status', 'suffix', 'leads_converted_from', 'converted_unit', 'monetary_unit', 'monetary_value', 'converted_value', 'middle_name']) delete person[f];
 
 
   // owner
