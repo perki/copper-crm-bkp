@@ -69,11 +69,11 @@ function convert(type, item) {
 
   // custom fields
   if (copperItem.custom_fields) {
-    handleCustomFields('contact', copperItem.custom_fields, hubspotItem);
+    handleCustomFields(type, copperItem.custom_fields, hubspotItem);
     delete copperItem.custom_fields;
   }
 
-  handleFields('contact', copperItem, hubspotItem);
+  handleFields(type, copperItem, hubspotItem);
 
   // cleanup empty fields
   for (const k of Object.keys(hubspotItem)) {

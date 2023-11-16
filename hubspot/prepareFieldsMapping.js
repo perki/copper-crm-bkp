@@ -61,7 +61,7 @@ for (const cf of customFields) {
         }
         break;
       case 'MultiSelect':
-        def.handle = 'MapMulti';
+        def.handle = 'MapMultiString';
         def.conf = {};
         for (const o of cf.options) {
           def.conf[o.id + ''] = o.name;

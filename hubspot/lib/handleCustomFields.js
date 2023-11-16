@@ -14,14 +14,17 @@ function MapItem(s, conf) {
 }
 
 function MapItemSELECT(s, conf) {
-  if (conf[s + ''] == null) console.log(s, conf);
+  if (conf[s + ''] == null)  throw new Error('Missing item ' + s + ' in ' + JSON.stringify(conf));
   return conf[s + ''].value;
 }
 
-function MapMulti(s, conf) {
-  console.log('MapMulti', s, conf);
-  throw new Error('Not implemented');
-  return s;
+function MapMultiString(arrayOfIds, conf) {
+  const res = [];
+  for (const itemIt of arrayOfIds) {
+    if (conf[itemIt + ''] == null)  throw new Error('Missing item ' + itemIt + ' in ' + JSON.stringify(conf));
+    res.push(conf[itemIt + '']);
+  }
+  return res.join(', ');
 }
 
 function Bool(s) {
@@ -39,7 +42,7 @@ const handles = {
   Copy,
   MapItem,
   MapItemSELECT,
-  MapMulti,
+  MapMultiString,
   Bool,
   Num,
   Copy
