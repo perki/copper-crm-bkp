@@ -3,7 +3,7 @@ const { getSocialsFor, getPhonesFor, getWebsites, getOwner } = require('./lib-ma
 
 module.exports = {
   directs: {
-    'address.street': 'street',
+    'address.street': 'address',
     'address.city': 'city',
     'address.state': 'state',
     'address.postal_code': 'zip',

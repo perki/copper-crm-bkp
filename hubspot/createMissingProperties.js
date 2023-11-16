@@ -2,6 +2,7 @@ const hubspot = require('@hubspot/api-client');
 global.SKIP_AUTO_GET_PROPERTIES = true; // prevent getProperties to run automatically
 const getCurrentProperties = require('./getProperties');
 
+const { pluralMap } = require('./lib/typeMaps');
 
 const customDefs = require('../data-hubspot/conf/custom_def.json');
 const fieldDefs = require('../data-hubspot/conf/fields_def.json');
@@ -36,13 +37,6 @@ async function updateProp(type, udpateObjSource) {
   } catch (e) {
     console.log(e.body || e);
   }
-};
-
-const typesMap = {
-  'company': 'companies',
-  'deal': 'deals',
-  'contact': 'contacts',
-  'task': 'tasks'
 };
 
 function getProperties(type, currentProps) {
@@ -85,10 +79,10 @@ function getProperties(type, currentProps) {
 
 
 (async () => {
-  for (const type of Object.keys(typesMap)) {
+  for (const type of Object.keys(pluralMap)) {
     console.log('**** ' + type);
 
-    const propsCurrent = await getCurrentProperties(typesMap[type]);
+    const propsCurrent = await getCurrentProperties(pluralMap[type]);
     const propRequired = getProperties(type, propsCurrent);
     let createdOne = false;
     for (const prop of propRequired.create) {
@@ -108,7 +102,7 @@ function getProperties(type, currentProps) {
 
 
     if (createdOne || updatedOne) {
-      await getCurrentProperties(typesMap[type], true);
+      await getCurrentProperties(pluralMap[type], true);
     }
   }
 })();

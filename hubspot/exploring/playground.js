@@ -23,8 +23,8 @@ async function go() {
   //console.log(createContactResponse);
   //const updateContactResponse = await hubspotClient.crm.contacts.batchApi.update({inputs: [contactObj]});
   //console.log(updateContactResponse);
-  //const items = await hubspotClient.crm.contacts.getAll();
-  const items = await hubspotClient.crm.companies.getAll(10, undefined, companiesProperties);
+  const items = await hubspotClient.crm.contacts.getAll(10, undefined, contactProperties);
+  //const items = await hubspotClient.crm.companies.getAll(10, undefined, companiesProperties);
   console.log(JSON.stringify(items, null, 2));
 
   // const owners = await hubspotClient.crm.owners.ownersApi.getPage();

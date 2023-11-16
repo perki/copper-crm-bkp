@@ -6,6 +6,8 @@
 const slug = require('slug');
 const {fs, path, dataConfPath} = require('./lib/pathsAndFS');
 
+const { mapType } = require('./lib/typeMaps');
+
 const customFields = require('../data/custom_field_definitions.json');
 
 const connectionFile = path.resolve(dataConfPath, 'custom_connections.json');
@@ -15,14 +17,6 @@ const fieldsDefFiles = path.resolve(dataConfPath, 'fields_def.json');
 const fieldsDef = fs.existsSync(fieldsDefFiles) ? require(fieldsDefFiles) : {};
 const customDef = fs.existsSync(customDefFiles) ? require(customDefFiles) : {};
 const connects = fs.existsSync(connectionFile) ? require(connectionFile) : {};;
-
-const mapType = {
-  'company': 'company',
-  'person': 'contact',
-  'lead': 'contact',
-  'opportunity': 'deal',
-  'project': 'project'
-}
 
 // ----- custom fields --------- //
 

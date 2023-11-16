@@ -7,7 +7,7 @@ module.exports = {
     first_name: 'firstname',
     last_name: 'lastname',
     title: 'jobtitle',
-    'address.street': 'street',
+    'address.street': 'address',
     'address.city': 'city',
     'address.state': 'state',
     'address.postal_code': 'zip',
