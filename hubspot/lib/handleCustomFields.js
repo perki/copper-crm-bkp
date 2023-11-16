@@ -13,9 +13,24 @@ function MapItem(s, conf) {
   return conf[s + ''];
 }
 
+function MapItemToNum(s, conf) {
+  return conf[s + ''].value;
+}
+
 function MapItemSELECT(s, conf) {
   if (conf[s + ''] == null)  throw new Error('Missing item ' + s + ' in ' + JSON.stringify(conf));
   return conf[s + ''].value;
+}
+
+function MapItemMULTI(arrayOfIds, conf) {
+  const res = [];
+  for (const itemIt of arrayOfIds) {
+    if (conf[itemIt + ''] == null)  throw new Error('Missing item ' + itemIt + ' in ' + JSON.stringify(conf));
+    const value = conf[itemIt + ''].value;
+    if (value == null) throw new Error('Missing value for item ' + itemIt +' in ' + JSON.stringify(conf));
+    res.push(value);
+  }
+  return res.join(';');
 }
 
 function MapMultiString(arrayOfIds, conf) {
@@ -42,10 +57,12 @@ const handles = {
   Copy,
   MapItem,
   MapItemSELECT,
+  MapItemMULTI,
   MapMultiString,
   Bool,
   Num,
-  Copy
+  Copy,
+  MapItemToNum
 }
 
 
@@ -54,6 +71,7 @@ function handleCustomFields(type, customFields, hubspotItem) {
     if (cf.value == null) continue;
     const def = customDefs[type][cf.custom_field_definition_id + ''];
     if (def == null) throw new Error('Cannot find customField def: ' + cf.custom_field_definition_id + ' for ' + type + '>' + JSON.stringify(cf));
+    if (handles[def.handle] == null) throw new Error('Cannot find customField map Method:' + def.handle);
 
     const value = handles[def.handle](cf.value, def.conf);
     handleDest(def, value, hubspotItem);

@@ -166,7 +166,7 @@ function checkExistingPropsVsDefinition(definitions, type, currentProps, todo) {
         propertyUpdate: 'options',
         hasUniqueValue: false,
         type: 'enumeration',
-        fieldType: def.fieldType,
+        fieldType: def.fieldType || 'select',
         options: Object.values(def.conf)
       }
       todo.create.push(propObj);
