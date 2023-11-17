@@ -44,9 +44,7 @@ function getEmail(email, hubspotItem) {
 
 function getEmails(emails, hubspotItem) {
   for (const emailItem of emails) {
-    if (emailItem.category === 'work' && hubspotItem.work_email == null) {
-      hubspotItem.work_email = emailItem.email;
-    } else if (emailItem.category === 'home' && hubspotItem.email == null) {
+    if (emailItem.category === 'work' && hubspotItem.email == null) {
       hubspotItem.email = emailItem.email;
     } else {
       if (hubspotItem.extras.emails == null) hubspotItem.extras.emails = [];

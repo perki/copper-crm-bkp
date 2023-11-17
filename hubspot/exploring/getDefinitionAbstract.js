@@ -1,4 +1,4 @@
-const properties = require('../../data-hubspot/properties/companies.json');
+const properties = require('../../data-hubspot/properties/contacts.json');
 
 
 for (const p of properties) {
