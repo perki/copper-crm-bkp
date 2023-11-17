@@ -28,7 +28,12 @@ Based on `../data-hubspot/conf/custom_def.json` and `fields_def` the following w
 
 ** This has been implemented to fit my needs and need to be adapated if you want fine-grain matching for your data set **
 
-### Perfom checks
+### genrate Items to be loade and Perfom checks
+
+Run `node hubspot/generateItems.js` to create items in `data-hubpsot/source/`. These are the items to be uploaded. 
+
+Then run `node hubspot/checks` that will check if all used fields are defined in the properties fiels. The results will warn you if you need to do some adjustments in the conf/* files. 
+
 
 
 
