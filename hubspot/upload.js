@@ -13,9 +13,16 @@ async function upload(typePlural, foreachItem) {
     if (foreachItem != null) foreachItem(item);
 
     delete item._transitional;
-    const res = await hubspotClient.crm[typePlural].basicApi.create({properties: item});
-    await syncStatus.add(item.copperid, res.id);
-    console.log(typePlural, r, item.name || res.id);
+    try {
+      const res = await hubspotClient.crm[typePlural].basicApi.create({properties: item});
+      await syncStatus.add(item.copperid, res.id);
+      console.log(typePlural, r, item.name || res.id);
+    } catch (e) {
+      console.log('On item', item);
+      console.log('Error', e.body );
+      try { syncStatus.close(); } catch (e) { }
+      process.exit(1);
+    }
   }
   syncStatus.close();
   syncStatuses[typePlural] = syncStatus.data;

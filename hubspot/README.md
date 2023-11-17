@@ -28,13 +28,21 @@ Based on `../data-hubspot/conf/custom_def.json` and `fields_def` the following w
 
 ** This has been implemented to fit my needs and need to be adapated if you want fine-grain matching for your data set **
 
-### genrate Items to be loade and Perfom checks
+### generate Items to be loade and Perfom checks
 
 Run `node hubspot/generateItems.js` to create items in `data-hubpsot/source/`. These are the items to be uploaded. 
 
 Then run `node hubspot/checks` that will check if all used fields are defined in the properties fiels. The results will warn you if you need to do some adjustments in the conf/* files. 
 
 
+### upload data 
 
+Run `node hubspot/upload.js` 
+
+You may encounter errors while upload, in my case several invalid emails have been reported. You have then to correct the source data from copper manualy and re run `node hubspot/generateItems.js` to create new data sets. 
+
+Don't worry synchronized items references are kept in `data-hubspot/sync-status` and `node hubspot/upload.js` can be restarted multiple time. 
+
+I got an `Existing item` error after manually terminating the upload in-course. Then you have to find the corresponding item id for copper and hubspot and add it to the related sync file in `data-hubspot/sync-status`. This may also happen when hubspot detect 2 identical entries (email) then just delete the latest entry in copper's source file.
 
 

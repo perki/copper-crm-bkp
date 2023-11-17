@@ -20,6 +20,9 @@ const syncStatusPath = path.resolve(dataPath, 'sync-status');
 fs.mkdirSync(syncStatusPath, {recursive: true});
 
 
+const tempPath = path.resolve(dataPath, 'temp');
+fs.mkdirSync(tempPath, {recursive: true});
+
 class SyncStatus {
   data;
   stream;
@@ -71,5 +74,6 @@ module.exports = {
   dataCurrentPath,
   dataSourcePath,
   dataPropertiesPath,
+  tempPath,
   SyncStatus
 };
