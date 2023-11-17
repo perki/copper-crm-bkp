@@ -1,14 +1,7 @@
+const hubspotClient = require('./lib/hubspotClient');
 const { fs, path, dataPropertiesPath } = require('./lib/pathsAndFS');
-const hubspot = require('@hubspot/api-client');
 
 fs.mkdirSync(dataPropertiesPath, { recursive: true });
-
-const HUBSPOT_TOKEN = process.env.HUBSPOT_TOKEN;
-if (!HUBSPOT_TOKEN) throw new Error('HUBSPOT_TOKEN environement variable missing');
-
-
-const hubspotClient = new hubspot.Client({ accessToken: HUBSPOT_TOKEN });
-
 
 async function getPropetriesFor(objectType, forceRefresh) {
   const filePath = path.resolve(dataPropertiesPath, objectType + '.json');

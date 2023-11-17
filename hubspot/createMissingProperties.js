@@ -1,16 +1,12 @@
-const hubspot = require('@hubspot/api-client');
+
 global.SKIP_AUTO_GET_PROPERTIES = true; // prevent getProperties to run automatically
+const hubspotClient = require('./lib/hubspotClient');
 const getCurrentProperties = require('./getProperties');
 
 const { pluralMap } = require('./lib/typeMaps');
 
 const customDefs = require('../data-hubspot/conf/custom_def.json');
 const fieldDefs = require('../data-hubspot/conf/fields_def.json');
-
-const HUBSPOT_TOKEN = process.env.HUBSPOT_TOKEN;
-if (!HUBSPOT_TOKEN) throw new Error('HUBSPOT_TOKEN environement variable missing');
-
-const hubspotClient = new hubspot.Client({ accessToken: HUBSPOT_TOKEN });
 
 async function createProp(type, propertyObj) {
   try {

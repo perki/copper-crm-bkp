@@ -1,12 +1,5 @@
-const hubspot = require('@hubspot/api-client');
-
 const {fs, path, dataCurrentPath, dataConfPath} = require('./lib/pathsAndFS');
-
-const HUBSPOT_TOKEN = process.env.HUBSPOT_TOKEN;
-if (! HUBSPOT_TOKEN) throw new Error('HUBSPOT_TOKEN environement variable missing');
-
-
-const hubspotClient = new hubspot.Client({ accessToken: HUBSPOT_TOKEN });
+const hubspotClient = require('./lib/hubspotClient');
 
 async function getOwners() {
   const body = await hubspotClient.crm.owners.ownersApi.getPage();
