@@ -116,7 +116,7 @@ function convert(type, item) {
 };
 
 
-if (false) {
+if (true) {
   let umatchedFields = {};
   const people = require('../data/peopleList.json');
   const contacts = people.map((p) => convert('contact', p));
@@ -125,7 +125,7 @@ if (false) {
 
   const hubDest = path.resolve(dataSourcePath, 'contacts.json');
   fs.writeFileSync(hubDest, JSON.stringify(contacts, null, 2));
-  console.log({umatchedFields});
+  console.log('contacts', {umatchedFields});
 }
 
 if (true) {
@@ -135,7 +135,7 @@ if (true) {
   
   const hubDest = path.resolve(dataSourcePath, 'companies.json');
   fs.writeFileSync(hubDest, JSON.stringify(companies, null, 2));
-  console.log({umatchedFields});
+  console.log('company', {umatchedFields});
 }
 
 

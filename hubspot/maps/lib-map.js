@@ -27,13 +27,16 @@ function getSocialsFor(type = 'contact') {
       if (social.category === 'linkedin') {
         if (isCompany && hubspotItem.linkedin_company_page == null) {
           hubspotItem.linkedin_company_page = social.url;
-        } else if (hubspotItem.hs_linkedinid == null) {
+          continue;
+        } 
+        
+        if (! isCompany && hubspotItem.hs_linkedinid == null) {
           const s = social.url.split('/');
           do {
             hubspotItem.hs_linkedinid = s.pop();
           } while (s.length > 0 && hubspotItem.hs_linkedinid === '');
           continue;
-        }
+        } 
       } 
 
       if (hubspotItem.extras.socials == null) hubspotItem.extras.socials = [];
