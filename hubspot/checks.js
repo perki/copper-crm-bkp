@@ -14,7 +14,7 @@ for (const [type, typePlural] of Object.entries(pluralMap)) {
   let missings = {};
   for (const item of items) {
     for (const field of Object.keys(item)) {
-     if (propMap[field] == null) {
+     if (field !== '_transitional' && propMap[field] == null) {
       if (! missings[field]) missings[field] = 0;
       missings[field]++;
      }

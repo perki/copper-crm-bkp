@@ -17,7 +17,7 @@ const convertConfs = {
 function convert(type, item) {
   const conv = convertConfs[type];
   const copperItem = structuredClone(item);
-  const hubspotItem = { extras: { }};
+  const hubspotItem = { extras: { }, _transitional: { }};
 
   // -- 1 => 1 matching
   for (const [copperKey, hubspotKey] of Object.entries(conv.directs)) {

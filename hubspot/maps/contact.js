@@ -56,6 +56,7 @@ function getEmails(emails, hubspotItem) {
 }
 
 function getCompanyId(copperCompanyId, hubspotItem) {
+  hubspotItem._transitional.copperCompanyId = copperCompanyId;
   // TODO
 }
 

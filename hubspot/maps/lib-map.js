@@ -76,7 +76,7 @@ function getOwner(copperId, hubspotItem) {
   if (copperId == null) return null;
   const owner = ownersByCopperIdMap[copperId + ''];
   if (owner == null) throw new Error('Cannot find owner with copperId: ' + copperId);
-  const hubspotId = owner.hubspot?.userId;
+  const hubspotId = owner.hubspot?.id;
   if (hubspotId == null) throw new Error('Cannot find hubspot.userId for copperId: ' + copperId);
   hubspotItem.hubspot_owner_id = hubspotId;
 }
