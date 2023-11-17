@@ -1,6 +1,8 @@
 # Copper CRM Backup 
 
-Download most of the data from Copper CRM in JSON format
+Download and backup most of the data from Copper CRM in JSON format.
+
+in [hubspot](hubspot) folder, you'll find an at-work toolset to upload Copper CRM data to HubSpot.
 
 ## Install 
 
