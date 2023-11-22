@@ -1,5 +1,5 @@
 const {fs, path, dataCurrentPath, dataConfPath} = require('./lib/pathsAndFS');
-const hubspotClient = require('./lib/hubspotClient');
+const { hubspotClient } = require('./lib/hubspotClient');
 
 async function getOwners() {
   const body = await hubspotClient.crm.owners.ownersApi.getPage();

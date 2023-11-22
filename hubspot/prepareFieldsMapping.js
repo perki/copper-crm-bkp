@@ -21,11 +21,26 @@ const connects = fs.existsSync(connectionFile) ? require(connectionFile) : {};;
 // ----- custom fields --------- //
 
 // extract Connect fields
+const connectMap = {};
 for (const cf of customFields.filter((c) => c.data_type === 'Connect')) {
-  if (connects[cf.id + '']) continue;
-  connects[cf.id + ''] = {
+  if (cf.available_on.length > 1) throw new Error('Cannot handle multiple available on value for custom connected fields', JSON.stringify(cf));
+  cf.available_on = cf.fromType = cf.available_on[0];
+  delete cf.available_on;
+  connectMap[cf.id + ''] = cf;
+}
+for (const cf of customFields.filter((c) => c.data_type === 'Connect')) {
+  const fromType = mapType[cf.fromType];
+  const toCF = connectMap[cf.connected_id + ''];
+  if (toCF == null) throw new Error('Cannot find "to" connect field for' + JSON.stringify(cf));
+  const toType = mapType[toCF.fromType];
+
+  if (connects[fromType] == null) connects[fromType] = {};
+  if (connects[fromType][cf.id + '']) continue;
+  connects[fromType][cf.id + ''] = {
+    toType: toType,
     name: cf.name,
-    to: cf.connected_id + ''
+    toCopperId: cf.connected_id + '',
+    hubspotAssociationKey: null
   }
 }
 

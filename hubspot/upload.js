@@ -1,5 +1,5 @@
 const {fs, path, SyncStatus} = require('./lib/pathsAndFS');
-const hubspotClient = require('./lib/hubspotClient');
+const { hubspotClient } = require('./lib/hubspotClient');
 
 const syncStatuses = {};
 

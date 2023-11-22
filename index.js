@@ -61,14 +61,12 @@ async function bkpCopper () {
   for (const item of Object.keys(entityMap)) {
     await getItem(item);
   }
-  await Promise.all([
-
-  ]);
   const promises = [];
   for (const item of Object.keys(entityMap)) {
     promises.push(getActivities(item));
     promises.push(getRelated(item, 'related'));
     if (item != 'tasks') promises.push(getRelated(item, 'files'));
+    promises.push(getRelatedLinks(item));
   }
   // this is done in parallel, we can set rate limiting to a higher value 
   waitBetweenCalls = 2000;
@@ -128,9 +126,10 @@ async function apiPostPaginated(myPath, data = {}) {
 
 async function apiGet(myPath, data = {}) {
   try {
-    console.log(myPath);
+    console.log(myPath, JSON.stringify(data));
     await waitOrNot();
     const res = await superagent.get('https://api.copper.com/developer_api/v1/' + myPath).set(HEADERS).query(data);
+    if (res.body == null) throw new Error('Null for ' + myPath + ' > ' + JSON.stringify(data));
     return res.body;
   } catch (e) {
     console.log(e.message, myPath, data);
@@ -180,5 +179,27 @@ async function getRelated(entityName, fileOrRelated) {
     if (fs.existsSync(myPath)) continue;
     const related = await apiGet(entityName + '/' + entity.id + '/' + fileOrRelated);
     fs.writeFileSync(myPath, JSON.stringify(related, null, 2));
+  }
+}
+
+async function getRelatedLinks(entityName) {
+  // randomize start to avoid 20 calls is the first second
+  await new Promise(resolve => setTimeout(resolve, Math.random()*2000));
+  const entityList = require(path.resolve(dataPath, entityName + 'List.json'));
+  const basePath = path.resolve(dataPath, entityName  + '-relatedLinks/');
+  fs.mkdirSync(basePath, { recursive: true });
+  const type = entityMap[entityName];
+
+  for (const entity of entityList) {
+    const myPath = path.resolve(basePath, entity.id + '.json');
+    if (fs.existsSync(myPath)) continue;
+    const related = await apiGet('related_links/', {
+      source_id: entity.id,
+      source_type: (type === 'person') ? 'people' : type
+    });
+   
+    fs.writeFileSync(myPath, JSON.stringify(related, null, 2));
+    // if (related.length > 0)  console.log(related);
+      
   }
 }

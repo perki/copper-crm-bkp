@@ -16,6 +16,9 @@ fs.mkdirSync(dataConfPath, {recursive: true});
 const dataPropertiesPath = path.resolve(dataPath, 'properties');
 fs.mkdirSync(dataPropertiesPath, {recursive: true});
 
+const dataAssociationsPath = path.resolve(dataPath, 'associations');
+fs.mkdirSync(dataAssociationsPath, {recursive: true});
+
 const syncStatusPath = path.resolve(dataPath, 'sync-status');
 fs.mkdirSync(syncStatusPath, {recursive: true});
 
@@ -75,5 +78,6 @@ module.exports = {
   dataSourcePath,
   dataPropertiesPath,
   tempPath,
+  dataAssociationsPath,
   SyncStatus
 };

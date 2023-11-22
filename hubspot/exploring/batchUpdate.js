@@ -1,5 +1,5 @@
 const { fs, path, tempPath} = require('../lib/pathsAndFS');
-const hubspotClient = require('../lib/hubspotClient');
+const { hubspotClient } = require('../lib/hubspotClient');
 
 const items = require('../../data-hubspot/temp/search.json');
 

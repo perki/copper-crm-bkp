@@ -1,4 +1,4 @@
-const hubspotClient = require('./lib/hubspotClient');
+const { hubspotClient } = require('./lib/hubspotClient');
 const { fs, path, dataPropertiesPath } = require('./lib/pathsAndFS');
 
 fs.mkdirSync(dataPropertiesPath, { recursive: true });

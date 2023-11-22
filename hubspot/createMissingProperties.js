@@ -1,6 +1,6 @@
 
 global.SKIP_AUTO_GET_PROPERTIES = true; // prevent getProperties to run automatically
-const hubspotClient = require('./lib/hubspotClient');
+const { hubspotClient } = require('./lib/hubspotClient');
 const getCurrentProperties = require('./getProperties');
 
 const { pluralMap } = require('./lib/typeMaps');

@@ -45,9 +45,13 @@ run `node files.js`
 
 ### extras
 
+### cleaning 
+
+After running clean scripts, re running the backup will not be able to find empty file and will re-dowload them. Do not use before being sure you have everything. 
+
 `node clean/cleanFiles.js` will remove all data files containing an empty array
 
-`node clean/removeEmptyfields.js` will remove empty and unsued fields from the backup .. MAKE A BACKUP OF `./data` before running!
+`node clean/removeEmptyfields.js` will remove empty and unsued fields from the backup .. MAKE A BACKUP OF `./data` before running! 
 
 ## Notes 
 

@@ -1,5 +1,5 @@
 
-const hubspotClient = require('./lib/hubspotClient');
+const { hubspotClient } = require('./lib/hubspotClient');
 const contactProperties = require('../../data-hubspot/properties/contacts.json').map((p) => p.name);
 const companiesProperties = require('../../data-hubspot/properties/companies.json').map((p) => p.name);
 
