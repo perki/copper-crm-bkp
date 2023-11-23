@@ -1,19 +1,18 @@
 global.SKIP_AUTO_GET_ASSOCIATIONS = true; // prevent getAssociations to run automatically
 const { hubspotApi } = require('./lib/hubspotClient');
-const getAssociations = require('./getAssociations');
+const { getAssociations } = require('./getAssociations');
 const { SyncStatus } = require('./lib/pathsAndFS');
 
 const { pluralMap } = require('./lib/typeMaps');
 
 const customAssociations = require('../data-hubspot/conf/custom_connections.json');
 
-let currentAssociations = null;
-const currentAssociationsMap = {};
+let currentAssociationsMap = null;
 const customMap = {};
 const syncStatus = new SyncStatus('associationDefinitions');
 
 (async () => { 
-  await initHubspot();
+  currentAssociationsMap = await getAssociations();
   initCopperCustoms();
   const autos = checkCustomsAndGetAuto();
   if (await createMissingAssociations(autos) > 0) {
@@ -62,18 +61,6 @@ function checkCustomsAndGetAuto() {
   return auto;
 }
 
-
-
-async function initHubspot() {
-  // 0- Prepare a map of all hubspot currentAssociations
-  currentAssociations = await getAssociations();
-  for (const [fromType, typeEntries] of Object.entries(currentAssociations)) {
-    for (const [hubspotId, entry] of Object.entries(typeEntries)) {
-      entry.fromType = fromType;
-      currentAssociationsMap[hubspotId] = entry;
-    }
-  }
-}
 
 function initCopperCustoms() {
   for (const [fromType, typeEntries] of Object.entries(customAssociations)) {

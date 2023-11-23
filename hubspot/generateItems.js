@@ -1,4 +1,4 @@
-const { fs, path, dataCurrentPath, dataConfPath, dataSourcePath } = require('./lib/pathsAndFS');
+const { fs, path, dataSourcePath } = require('./lib/pathsAndFS');
 
 const { handleCustomFields, handleFields } = require('./lib/handleCustomFields');
 

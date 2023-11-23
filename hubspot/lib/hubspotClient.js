@@ -1,6 +1,6 @@
 const hubspot = require('@hubspot/api-client');
 const slug = require('slug');
-const getHubspotAssociationKey = require('./getHubspotAssociationKey');
+const { getHubspotAssociationKey } = require('./getHubspotAssociationKey');
 
 const HUBSPOT_TOKEN = process.env.HUBSPOT_TOKEN;
 if (! HUBSPOT_TOKEN) throw new Error('HUBSPOT_TOKEN environement variable missing');

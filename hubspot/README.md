@@ -21,11 +21,14 @@ You should MANUALY do the matching by completing `copper` field with copperId.
 run `node hubspot/getAssociations.js`  
 The result will be in `../data-hubspot/current/associations.json`. 
 
+/!\ this will try to figure out on its own the "reverse" matching association, it you get any output with messages indicating a problem on the association you must figure out by yourself the underlying problem.....
+
 ### Prepare custom fields matching 
 
 run `node hubspot/prepareFieldsMapping.js` to create 
 - `../data-hubspot/conf/custom_def.json` you should check and eventually change the matching proposed automatically
 - `../data-hubspot/conf/fields_def.json` you should check and eventually change the matching proposed automatically
+- `../data-hubspot/conf/custom_connections.json` manually choose the right association by updating `hubspotAssociationKey` to match one of the keys in `../data-hubspot/current/associations.json`. You can also set the value `"auto"` so the scripts will try to create and find the most appropriate matching. Note, that only one of the "direction" of an association should be set, the other should be let to `null`. 
 
 ### Create missing properties 
 
@@ -50,4 +53,8 @@ Don't worry synchronized items references are kept in `data-hubspot/sync-status`
 
 I got an `Existing item` error after manually terminating the upload in-course. Then you have to find the corresponding item id for copper and hubspot and add it to the related sync file in `data-hubspot/sync-status`. This may also happen when hubspot detect 2 identical entries (email) then just delete the latest entry in copper's source file.
 
+
+## Associations
+
+run `node hubspot/createMissingAssociationDefinitions.js` to checks and create the associations definitions. 
 
