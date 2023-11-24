@@ -8,10 +8,13 @@ async function getAssociations(forceFecth) {
   if (fs.existsSync(filePath) && ! forceFecth) {
     return require(filePath);
   }
+
+  const associationObjects = Object.keys(pluralMap);
+  associationObjects.push(...['note', 'call', 'meeting', 'email', 'task', 'communication']);
   
   const associations = {};
-  for (const fromType of Object.keys(pluralMap)) {
-    for (const toType of Object.keys(pluralMap)) {
+  for (const fromType of associationObjects) {
+    for (const toType of associationObjects) {
       const body = await hubspotApi.get('v4/associations/' + fromType + '/' + toType + '/labels');
       await new Promise((r) => { setTimeout(r, 200) });
       for (const item of body.results) {

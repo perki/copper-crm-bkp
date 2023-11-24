@@ -9,8 +9,6 @@ let associationsDefs = null;
 const associationsFilePath = path.resolve(dataSourcePath, 'associations.json')
 const associations = fs.existsSync() ? require(associationsFilePath) : {};
 
-
-
 const syncMaps = {
   company : new SyncStatus('companies'),
   contact : new SyncStatus('contacts')
@@ -35,11 +33,9 @@ function generateAssociation (copperType, fromHsType, item) {
       const associationKey = getHubspotAssociationKey(fromHsType, toHsType, null);
       const associationDef = associationsDefs[associationKey];
       if (associationDef == null) throw new Error('Cannot find association key ' + associationKey);
-      console.log(associationDef);
-    
-
+  
       const associationMark = associationKey + ':' + fromHsId + ':' + toHsId;
-      const associationMarkRev = associationDef.reverse + ':' + fromHsId + ':' + toHsId;
+      const associationMarkRev = associationDef.reverse + ':' + toHsId + ':' + fromHsId;
       if (associations[associationMark] != null) {
         if (associations[associationMarkRev] == associationMark) continue;
         throw new Error('Wrong association mark '+ associationMark + ' points to ' + associationMarkRev + ' which points to ' + associations[associationMarkRev]);
@@ -57,7 +53,6 @@ if (true) {
     generateAssociation('people', 'contact');
     generateAssociation('leads', 'contact');
     generateAssociation('companies', 'company');
-    console.log(associations);
     fs.writeFileSync(associationsFilePath, JSON.stringify(associations, null, 2));
   })();
 }
