@@ -1,7 +1,7 @@
 backups/
 data/
 data*.zip
-data-hubspot/
+data-hubspot*
 node_modules/
 secret.sh
 .DS_Store

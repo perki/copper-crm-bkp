@@ -1,5 +1,16 @@
 # Upload your copper backup to Hubspot 
 
+At work! Work nicely for Companies, contacts and their related activities. 
+
+Contributions welcome for a better associations handling as well as deals and projects.
+
+## Preparation 
+
+1. You need a full backup of copper 
+2. Get a Hubspot token https://developers.hubspot.com/docs/api/migrate-an-api-key-integration-to-a-private-app
+  Check everything relate to CRM and users in Settings as well as "files" in account
+3. Set the token as an environement car with `export HUBSPOT_TOKEN="........"`
+
 ## Usage
 
 ### Fetch all properties on Hubspot
@@ -7,14 +18,16 @@
 run `node hubspot/getProperties.js`  
 All data will be loaded in `../data-hubspot/properties` this is required to check the existing fields on your current setup
 
-### Fetch existing users on Hubspot and map them to userIds
+### Fetch existing users on Hubspot and map them to copper userIds
 
-run `node hubspot/getUsers.js`  
+run `node hubspot/getOwners.js`  
 ⚠️ This does not implement paging you might miss some users check in `../data-hubspot/current/owners.json` that you have a full list. 
 
 This will create or update  `../data-hubspot/conf/ownersMap.json` with new entries.
 
 You should MANUALY do the matching by completing `copper` field with copperId.
+I had some deleted users on Copper. 
+
 
 ### Fetch existing associations on Hubspot 
 
@@ -34,9 +47,17 @@ run `node hubspot/prepareFieldsMapping.js` to create
 
 Based on `../data-hubspot/conf/custom_def.json` and `fields_def` the following will create or update properties on hubspot matching copper's data. 
 
+run `node hubspot/createMissingProperties.js`
+
 ** This has been implemented to fit my needs and need to be adapated if you want fine-grain matching for your data set **
 
-### generate Items to be loade and Perfom checks
+## Associations
+
+run `node hubspot/createMissingAssociations.js` to checks and create the associations definitions. 
+
+I was limited during this step to be able to create just one labeled association .. it might be usefull in the future. 
+
+### generate Items to be loaded and Perfom checks
 
 Run `node hubspot/generateItems.js` to create items in `data-hubpsot/source/`. These are the items to be uploaded. 
 
@@ -53,8 +74,7 @@ Don't worry synchronized items references are kept in `data-hubspot/sync-status`
 
 I got an `Existing item` error after manually terminating the upload in-course. Then you have to find the corresponding item id for copper and hubspot and add it to the related sync file in `data-hubspot/sync-status`. This may also happen when hubspot detect 2 identical entries (email) then just delete the latest entry in copper's source file.
 
+## Generate and upload activities
 
-## Associations
-
-run `node hubspot/createMissingAssociationDefinitions.js` to checks and create the associations definitions. 
-
+run `node hubspot/generateActivities.js`
+run `node hubspot/uploadActivities.js`
